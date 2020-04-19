@@ -1,0 +1,3 @@
+/Users/stonezhu/Desktop/CS2921A - HW2 - Tobias/CMakeFiles/rebuild_cache.dir
+/Users/stonezhu/Desktop/CS2921A - HW2 - Tobias/CMakeFiles/edit_cache.dir
+/Users/stonezhu/Desktop/CS2921A - HW2 - Tobias/CMakeFiles/opengl_cv_skeleton.dir
