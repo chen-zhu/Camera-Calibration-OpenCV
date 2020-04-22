@@ -11,6 +11,14 @@ opencv2/opencv.hpp
 -
 opencv2/highgui/highgui_c.h
 -
+opencv2/core/persistence.hpp
+-
+opencv2/core/mat.hpp
+-
+opencv2/core.hpp
+-
+fstream
+-
 GL/freeglut.h
 -
 GLUT/glut.h
