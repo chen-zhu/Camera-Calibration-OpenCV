@@ -56,11 +56,11 @@ void drawAxes(float length){
 
   glColor3f(0,1,0) ;
   glVertex3f(0,0,0) ;
-  glVertex3f(0,length,0);
+  glVertex3f(0,-length,0);
 
   glColor3f(0,0,1) ;
   glVertex3f(0,0,0) ;
-  glVertex3f(0,0,length);
+  glVertex3f(0,0,-length);
   glEnd();
 
 
@@ -163,7 +163,7 @@ void display(){
   double fx = camera_matrix.at<double>(0,0);
   double fy = camera_matrix.at<double>(1,1); 
   double field_of_view_angle = 2.0 * atan(height/(2.0*fy) ) * 180 / 3.1415926;
-  //WTF --> double totally messed it up. make sure to multiply by 1.0
+  //WTH?? --> double totally messed it up. make sure to multiply by 1.0
   double aspect_ratio = (fy/fx) * ((1.0 * width)/(1.0 * height));
   //float aspect_ratio = width * 1.0 / height;
 
@@ -398,31 +398,16 @@ void idle()
 //https://docs.opencv.org/master/de/dd9/classcv_1_1FileNode.html
 //openCV demo/cpp/calibration.cpp
 void readCameraXMLConfig(string filename){
-  //cv::FileStorage xmlFile(filename, 0);
-  //xmlFile["camera_matrix"] >> camera_matrix;
-  //xmlFile["distortion_coefficients"] >> distortion_coefficients;
-  ifstream file(filename);
-
-  double param = 0;
-  for(int i = 0;i < 3;i++){
-      for(int j = 0;j < 3;j++){
-          file >> param;
-          camera_matrix.at<double>(i,j) = param;
-      }
-  }
-  for(int i = 0;i < 4;i++){
-      file >> param;
-      distortion_coefficients.at<double>(i,0) = param;
-  }
-
-  file.close();
+  cv::FileStorage xmlFile(filename, 0);
+  xmlFile["camera_matrix"] >> camera_matrix;
+  xmlFile["distortion_coefficients"] >> distortion_coefficients;
 }
 
 int main( int argc, char **argv )
 {
 
   //Read in camera info here
-  readCameraXMLConfig("intrins2.txt");
+  readCameraXMLConfig("camera_calib_result.xml");
 
   int w,h;
 
