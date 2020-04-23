@@ -75,8 +75,10 @@ void placeTeapot(){
   glPushAttrib(GL_POLYGON_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT);
   glPushMatrix();
     glColor3f(0.37,0.85,0.62);
+    //make it vertical to the screen
+    //glRotatef(90,1,0,0);
     glRotatef(-90,1,0,0);
-    glTranslatef(2.5,1.5,-3.5);
+    glTranslatef(3.5, 0.0, -2.5);
     glutSolidTeapot(2);
   glPopMatrix();
   glPopAttrib();
@@ -86,7 +88,7 @@ void placeSphere(){
   glPushAttrib(GL_POLYGON_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT);
   glPushMatrix();
   
-  glTranslatef(-3.0, 0.0, 0.0);
+  glTranslatef(-1.0, 0.0, 0.0);
   glColor3f(0.37,0.85,0.62);
 
   //glutSolidTeapot(2.0);
@@ -122,7 +124,7 @@ void display(){
 
   cv::Mat chessboard_cord_MAT = cv::Mat(chessboard_cord);
 
-  //cv::Mat calculated_mat = cv::Mat::zeros(4, 4, CV_64FC1);
+  cv::Mat calculated_mat = cv::Mat::eye(4, 4, CV_64FC1);
 
   // show the current camera frame
 
@@ -215,6 +217,9 @@ void display(){
       cv::Mat tvec; //Output vector of translation vectors estimated for each pattern view
       cv::solvePnP(chessboard_cord_MAT, found_corners, camera_matrix, distortion_coefficients, rvec, tvec, false);//, CV_ITERATIVE);
       //https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#void%20Rodrigues(InputArray%20src,%20OutputArray%20dst,%20OutputArray%20jacobian)
+      //https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#void%20Rodrigues(InputArray%20src,%20OutputArray%20dst,%20OutputArray%20jacobian)
+      
+      //Hummm Somehow we have to invert x-axis rotation --> because teapot shoudl rotate in the different than chessboard
       rvec.at<double>(1,0) = -rvec.at<double>(1,0);
       cv::Rodrigues(rvec, rotation);
 
@@ -228,18 +233,40 @@ void display(){
       
       //concluded that chessboard_cord_MAT is correct~
 
-      double multMat[16] = {
-                        rotation.at<double>(0,0), rotation.at<double>(0,1), rotation.at<double>(0,2), 0,
-                        rotation.at<double>(1,0), rotation.at<double>(1,1), rotation.at<double>(1,2), 0,
-                        rotation.at<double>(2,0), rotation.at<double>(2,1), rotation.at<double>(2,2), 0,
-                        tvec.at<double>(0,0),     -tvec.at<double>(1,0),    tvec.at<double>(2,0),     1
-                      };
+      /*GLdouble calced_matrix[16] = {
+                    -rotation.at<double>(0,0), -rotation.at<double>(0,1), -rotation.at<double>(0,2), 0,
+                    rotation.at<double>(1,0), rotation.at<double>(1,1), rotation.at<double>(1,2), 0,
+                    rotation.at<double>(2,0), rotation.at<double>(2,1), rotation.at<double>(2,2), 0,
+                    tvec.at<double>(0,0),     -tvec.at<double>(1,0),    tvec.at<double>(2,0),     1
+                  };
+      */ 
 
+      /*
+      GLdouble calced_matrix[16] = {
+                    rotation.at<double>(0,0), -rotation.at<double>(1,0), rotation.at<double>(2,0),  tvec.at<double>(0,0),
+                    rotation.at<double>(0,1), -rotation.at<double>(1,1), -rotation.at<double>(2,1), -tvec.at<double>(1,0),
+                    rotation.at<double>(0,2), rotation.at<double>(1,2),  rotation.at<double>(2,0),  0,
+                    0,                        0,                         tvec.at<double>(2,2),      1
+                  };
+      */
+
+      GLdouble calced_matrix[16] = {
+                    rotation.at<double>(0,0), rotation.at<double>(0,1), rotation.at<double>(0,2), 0,
+                    rotation.at<double>(1,0), rotation.at<double>(1,1), rotation.at<double>(1,2), 0,
+                    rotation.at<double>(2,0), rotation.at<double>(2,1), rotation.at<double>(2,2), 0,
+                    tvec.at<double>(0,0),     -tvec.at<double>(1,0),    tvec.at<double>(2,0),     1
+                  };
+      
       glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
-      //glLoadMatrixd(multMat);
       glScalef(1.0,-1.0,-1.0);
-      glMultMatrixd(multMat);
+      //glLoadMatrixd(calced_matrix);
+      glMultMatrixd(calced_matrix);
+      //This is a state machine!
+
+      //cv::Mat converted = cv::Mat::eye(4,4,CV_64F);
+      //converted.at<double>(1,1) = -1.0f;
+      //converted.at<double>(2,2) = -1.0f;
       //TODO: redundant here~
       /*for (int row = 0; row < 3; ++row){
         for (int col = 0; col < 3; ++col) {
@@ -250,9 +277,6 @@ void display(){
       viewMAT.at<double>(3,3) = 1.0f;
 
       //now transfer openCV to openGL cord.
-      cv::Mat converted = cv::Mat::eye(4,4,CV_64F);
-      converted.at<double>(1,1) = -1.0f;
-      converted.at<double>(2,2) = -1.0f;
       viewMAT = converted * viewMAT;
 
       //completely flip~
@@ -296,14 +320,10 @@ void display(){
       //Flip it here~ OpenGL and OpenCV uses different cord system~~~! 
       //glScalef(1.0, -1.0, -1.0);
 
-
-      //TODO: Adjust 
-      glTranslatef(4.0, 0.0, 0.0);
-      glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-
-      //glPushMatrix();
-      //  drawAxes(100);
-      //glPopMatrix();
+      glPushMatrix();
+        //draw axis @000
+        drawAxes(100);
+      glPopMatrix();
 
       if(obj == 1){
         placeTeapot();
@@ -381,7 +401,7 @@ void readCameraXMLConfig(string filename){
   //cv::FileStorage xmlFile(filename, 0);
   //xmlFile["camera_matrix"] >> camera_matrix;
   //xmlFile["distortion_coefficients"] >> distortion_coefficients;
-  ifstream file("intrins2.txt");
+  ifstream file(filename);
 
   double param = 0;
   for(int i = 0;i < 3;i++){
@@ -402,7 +422,7 @@ int main( int argc, char **argv )
 {
 
   //Read in camera info here
-  readCameraXMLConfig("result.xml");
+  readCameraXMLConfig("intrins2.txt");
 
   int w,h;
 
