@@ -193,8 +193,8 @@ void display(){
     //          200   //zFar
     //        );
     //Setting the projection matrix here~
-    glViewport(0,0,width,height);
-    glMatrixMode(GL_PROJECTION);
+    //glViewport(0,0,width,height);
+    //glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(field_of_view_angle, //field_of_view_angle
               aspect_ratio, //aspect
@@ -221,6 +221,7 @@ void display(){
       
       //Hummm Somehow we have to invert x-axis rotation --> because teapot shoudl rotate in the different than chessboard
       rvec.at<double>(1,0) = -rvec.at<double>(1,0);
+      //rvec.at<double>(2,0) = -rvec.at<double>(2,0);
       cv::Rodrigues(rvec, rotation);
 
       /*
@@ -261,6 +262,7 @@ void display(){
       glLoadIdentity();
       glScalef(1.0,-1.0,-1.0);
       //glLoadMatrixd(calced_matrix);
+      //Applies subsequent matrix operations to the modelview matrix stack
       glMultMatrixd(calced_matrix);
       //This is a state machine!
 
