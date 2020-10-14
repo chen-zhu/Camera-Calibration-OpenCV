@@ -63,7 +63,6 @@ void drawAxes(float length){
   glVertex3f(0,0,-length);
   glEnd();
 
-
   glPopAttrib() ;
 }
 
@@ -71,8 +70,6 @@ void placeTeapot(){
   glPushAttrib(GL_POLYGON_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT);
   glPushMatrix();
     glColor3f(0.37,0.85,0.62);
-    //make it vertical to the screen
-    //glRotatef(90,1,0,0);
     glRotatef(-90,1,0,0);
     glTranslatef(3.5, 0.0, -2.5);
     glutSolidTeapot(2);
