@@ -34,9 +34,3 @@ k2: -9.9163998698758346e-02
 p1: -1.2398694086340389e-03
 p2: 3.2412933543665302e-03
 k3: 0
-
-
-
-My camera has smaller reprojection error than the sample photos, which could be that my camera is newer & well-produced/well-calibrated and it has way higher resolutions (720*1280) than the sample photos (480*640). (I actually ran the calibration program a couple times. I did notice that the program returned different avg reproduction errors with different camera intrinsic values). In addition, the vertical FOV of my camera is smaller than the sample pictures, while the horizontal FOV is larger than the sample pictures. 
-
-
